@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        :root {
+            --pcolor: rgb(8, 112, 161);
+            --bgcolor: #007bff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            /* font-family: Arial, Helvetica, sans-serif; */
+            background-color: var(--bgcolor);
+        }
+        /* top nav */
+        .container nav.topnav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background-color: white;
+            padding: 3px 10px;
+        }
+
+        .container nav.topnav a,
+        .container nav.topnav label{
+            padding: 10px;
+            text-decoration: none;
+            color: var(--bgcolor);
+            border-right: 1px solid rgb(196, 196, 196);
+            transition: 0.6s;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .container nav.topnav a:last-child {
+            border-right: none;
+        }
+
+        .container nav.topnav a:hover,
+        .container nav.topnav label:hover{
+            background-color: var(--bgcolor);
+            color: white;
+        }
+        .container nav.topnav label{
+            display: none;
+        }
+        @media (width < 450px){
+            .container nav.topnav{
+                flex-wrap: wrap;
+                justify-content: start;
+            }
+            .container nav.topnav label{
+                display: block;
+                border:none;
+                text-align: left;
+            }
+            
+            .container nav.topnav a{
+                width: 100%;
+                border: none;
+                text-align: left;
+                padding: 5px 10px;
+                display: none;
+            }
+            .container nav.topnav input:checked ~ a{
+                display: block;
+            }
+            .container nav.topnav input:checked ~ label{
+                background-color: var(--bgcolor);
+                color: white;
+            }
+        }
+
+
+        header {
+            background-color: white;
+            margin-top: 30px;
+            padding: 10px;
+            box-shadow: 0px 0px 6px gray;
+            position: sticky;
+            top: 0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 99;
+        }
+
+        header button,
+        main button {
+            padding: 10px 20px;
+            background-color: var(--bgcolor);
+            outline: none;
+            border: none;
+            color: white;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        header button:hover,
+        main button:hover {
+            box-shadow: 0px 0px 4px gray;
+        }
+
+        main {
+            width: 90%;
+            margin: auto;
+            position: relative;
+            height: 80vh;
+            margin-bottom: 100px;
+        }
+
+        main textarea {
+            width: 100%;
+            height: 100%;
+            outline: none;
+            border: none;
+            resize: none;
+            color: black;
+            padding: 20px 10px;
+            font-size: 16px;
+            font-family: monospace;
+            line-height: 22px;
+            /* white-space: pre; */
+        }
+
+        main>button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        /* Media Query for Mobile Devices */
+        @media (max-width: 440px) {
+            header button {
+                padding: 6px;
+                font-size: 14px;
+                border-radius: 6px;
+            }
+
+            header {
+                margin-top: 15px;
+            }
+
+            header h3 {
+                font-size: 16px;
+            }
+        }
+
+        /* Media Query for low resolution  Tablets, Ipads */
+        @media (min-width: 440px) and (max-width: 520px) {
+            header button {
+                padding: 10px;
+                font-size: 16px;
+                border-radius: 8px;
+            }
+
+            header {
+                margin-top: 30px;
+            }
+
+            header h3 {
+                font-size: 17px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <nav class="topnav">
+            <input type="checkbox" id="menu" style="display: none;">
+            <label for="menu">Menu</label>
+            <a href="index.htm">Home</a>
+            <a href="Mock test.html">Mock Test</a>
+            <a href="saveData.html">Save Data</a>
+            <a href="upload data.html">Upload Data</a>
+        </nav>
+        <header>
+            <h3>Total Quest. : <span id="totalQuest"></span></h3>
+            <button type="button" onclick="Download()">Download</button>
+            <!-- <button type="button" onclick="saveBtn()">Save</button>
+            <button type="button" onclick="saveAs()">Save As</button> -->
+            <button type="button" onclick="navigator.clipboard.writeText(textarea.value)">Copy Text</button>
+        </header>
+        <main>
+            <textarea spellcheck="false" onkeydown="keyDown(event, this)" readonly></textarea>
+            <button type="button" onclick="textarea.removeAttribute('readonly');this.style.display='none';">
+                Edit
+            </button>
+        </main>
+    </div>
+    </div>
+    <script>    
+        let localQuestions = JSON.parse(localStorage.getItem("Questions"));
+        let textarea = document.getElementsByTagName("textarea")[0];
+        let totalQuest = document.getElementById("totalQuest");
+        let fileHandle;
+
+        function Download(){
+            let a = document.createElement("a");
+            a.setAttribute("download", "MCQ");
+            let file = new Blob([textarea.value], {type:'text/plain'});
+            let url = URL.createObjectURL(file);
+            a.href = url;
+            a.click();
+        }
+
+        async function saveAs() {
+            let val = textarea.value;
+            try {
+                let valid = await JSON.parse(val);
+            }
+            catch (err) {
+                alert("Please Enter Valid Data!");
+                return
+            }
+            try{
+                fileHandle = await window.showSaveFilePicker(obj);
+            }
+            catch (err){
+                if(!err){
+                    let writAble = await fileHandle.createWritable();
+                    await writAble.write(val);
+                    await writAble.close();
+                }
+                else{
+                    alert("Your Browser Does Not Support")
+                }
+
+            }
+        }
+
+        async function saveBtn() {
+            if (!fileHandle) {
+                saveAs();
+            }
+            else {
+                let val = textarea.value;
+                try {
+                    let valid = await JSON.parse(val);
+                }
+                catch (err) {
+                    alert("Please Enter Valid Data!");
+                    return
+                }
+                let writAble = await fileHandle.createWritable();
+                await writAble.write(val);
+                await writAble.close();
+            }
+        }
+
+        const obj = {
+            types: [
+                {
+                    description: "Text File",
+                    accept: {
+                        "text/plain": [".txt"]
+                    }
+                }
+            ],
+            excludeAcceptAllOption: true,
+            suggestedName: "Student Data"
+        }
+
+        function keyDown(e, t) {
+            if (e.key == "Tab") {
+                e.preventDefault();
+                let val = e.target.value;
+                let s = t.selectionStart;
+                let end = t.selectionEnd;
+                t.value = val.substring(0, s) + "\t" + val.substring(s);
+                t.setSelectionRange(s + 1, end + 1);
+            }
+        }
+
+        let finalText = '[\n';
+        let arr = localQuestions;
+        for (let i=0; i<arr.length; i++) {
+            finalText += `\t{"question":${JSON.stringify(arr[i].question)},\n\t "answer":${JSON.stringify(arr[i].answer)},\n\t "attend":${JSON.stringify(arr[i].attend)},\n\t "correct":${JSON.stringify(arr[i].correct)},\n\t "status":${JSON.stringify(arr[i].status)},\n\t "options":[`;
+            for(let j=0; j<arr[i].options.length;j++){
+                finalText += `\n\t\t${JSON.stringify(arr[i].options[j])}`;
+
+                if (j != arr[i].options.length - 1) {
+                    finalText += ",";
+                }
+            }
+            finalText+="]\n\t}"
+            if (i != arr.length - 1) {
+                finalText += ",\n";
+            }
+        }
+        finalText += "\n]";
+        textarea.value = finalText;
+        console.log(JSON.parse(finalText));
+        totalQuest.innerText = localQuestions.length;        
+    </script>
+</body>
+
+</html>
