@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+
+        :root {
+            --pcolor: rgb(8, 112, 161);
+            --bgcolor: #007bff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            /* font-family: Arial, Helvetica, sans-serif; */
+            background-color: var(--bgcolor);
+        }
+        /* top nav */
+        .container nav.topnav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background-color: white;
+            padding: 3px 10px;
+        }
+
+        .container nav.topnav a,
+        .container nav.topnav label{
+            padding: 10px;
+            text-decoration: none;
+            color: var(--bgcolor);
+            border-right: 1px solid rgb(196, 196, 196);
+            transition: 0.6s;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .container nav.topnav a:last-child {
+            border-right: none;
+        }
+
+        .container nav.topnav a:hover,
+        .container nav.topnav label:hover{
+            background-color: var(--bgcolor);
+            color: white;
+        }
+        .container nav.topnav label{
+            display: none;
+        }
+        @media (width < 450px){
+            .container nav.topnav{
+                flex-wrap: wrap;
+                justify-content: start;
+            }
+            .container nav.topnav label{
+                display: block;
+                border:none;
+                text-align: left;
+            }
+            
+            .container nav.topnav a{
+                width: 100%;
+                border: none;
+                text-align: left;
+                padding: 5px 10px;
+                display: none;
+            }
+            .container nav.topnav input:checked ~ a{
+                display: block;
+            }
+            .container nav.topnav input:checked ~ label{
+                background-color: var(--bgcolor);
+                color: white;
+            }
+        }
+
+        .container nav.filter {
+            position: sticky;
+            top: 0;
+            box-shadow: 1px 1px 5px gray;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px;
+            background-color: white;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            row-gap: 10px;
+        }
+        .container nav.filter button:has(label[for="filterShow"]){
+            display: none;
+        }
+
+        .container nav.filter select {
+            width: 150px;
+            padding: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .container nav.filter input {
+            padding: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+
+
+        .container .tableContainer {
+            background-color: white;
+            padding: 30px;
+            width: 95%;
+            margin: 0 auto 200px auto;
+            overflow: auto;
+        }
+
+        .container .tableContainer table {
+            border-collapse: collapse;
+            color: black;
+            width: 100%;
+        }
+
+        .container .tableContainer table tr:hover:not(:first-child) {
+            box-shadow: 0 0 7px gray;
+            background-color: aliceblue;
+        }
+
+        .container .tableContainer table tr.complete,
+        .container .tableContainer table tr.complete:hover {
+            background-color: rgb(204, 235, 204);
+            color: green;
+        }
+
+        .container .tableContainer table tr.complete>td,
+        .container .tableContainer table tr.complete:hover>td {
+            border-color: green;
+        }
+
+        .container .tableContainer table :is(th, td) {
+            border: 1px solid rgb(138, 138, 138);
+            padding: 4px;
+        }
+
+        .container .tableContainer table tr td:last-child {
+            width: 150px;
+            text-align: center;
+        }
+
+        .container .tableContainer table tr td button {
+            padding: 0 10px;
+            background-color: var(--bgcolor);
+            outline: none;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .popupcontainer {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.4);
+            position: fixed;
+            inset: 0;
+        }
+
+        .popup {
+            width: 550px;
+            margin: 50px auto;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgb(173, 171, 171);
+            background-color: white;
+        }
+
+        .popup header {
+            padding: 25px;
+            box-shadow: 2px 0px 8px gray;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        main {
+            padding: 25px;
+        }
+
+        main #Question {
+            font-size: 20px;
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid var(--bgcolor);
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            resize: none;
+            outline: none;
+        }
+
+        main ul#options {
+            list-style-type: none;
+            margin-top: 20px;
+        }
+
+        main ul#options li {
+            background: aliceblue;
+            border: 1px solid #84c5fe;
+            border-radius: 5px;
+            padding: 8px 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            column-gap: 10px;
+        }
+
+        /* correct incorrect */
+        main ul#options li.tick {
+            background-color: #c8e4cf;
+            color: #155724;
+            border-color: #63ae74;
+        }
+
+        main ul#options li .icon {
+            height: 26px;
+            width: 26px;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 13px;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            line-height: 24px;
+        }
+
+        main ul#options li .icon.tick {
+            color: #23903c;
+            border-color: #23903c;
+            background: #d4edda;
+        }
+
+        main li button {
+            background-color: transparent;
+            outline: none;
+            border: none;
+            font-size: 15px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        main li button:focus,
+        main li button:focus-visible {
+            outline: 1px solid black;
+            border-radius: 50%;
+        }
+
+        main .option {
+            width: 100%;
+            font-size: 16px;
+            padding: 4px;
+            border: 1px solid var(--bgcolor);
+            outline: none;
+        }
+
+        main #addNewOptionBtn,
+        .popup header button,
+        .container nav.filter button {
+            padding: 8px 20px;
+            font-size: 15px;
+            outline: none;
+            background-color: var(--bgcolor);
+            border: 1px solid var(--bgcolor);
+            border-radius: 6px;
+            color: white;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        main #addNewOptionBtn:hover,
+        .popup header button:hover,
+        .container nav.filter button:hover {
+            box-shadow: 0 0 6px rgb(103, 102, 102);
+        }
+
+        main #addNewOptionBtn:disabled {
+            background-color: transparent;
+            color: var(--bgcolor);
+        }
+
+        .popup footer {
+            display: flex;
+            justify-content: center;
+            column-gap: 20px;
+            align-items: center;
+            padding: 10px 25px;
+        }
+
+        .popup footer button {
+            padding: 12px 20px;
+            font-size: 18px;
+            outline: none;
+            background-color: var(--bgcolor);
+            border: 1px solid var(--bgcolor);
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .popup footer button:hover {
+            box-shadow: 0 0 6px rgb(103, 102, 102);
+        }
+
+        .popup footer button:disabled {
+            pointer-events: none;
+            background-color: transparent;
+            color: var(--bgcolor);
+        }
+
+        @media (width < 1067px) and (width > 600px){
+            .container nav.filter {
+                padding: 8px 15px;
+            }
+
+            .container nav.filter select {
+                width: 120px;
+                font-size: 15px;
+                outline: none;
+            }
+
+            .container nav.filter input {
+                width: 150px;
+                font-size: 15px;
+            }
+
+            .container nav.filter button {
+                padding: 8px 16px;
+                font-size: 15px;
+            }
+        }
+        @media (width < 600px) {
+            .container nav.filter div{
+                display: none;
+            }
+            .container nav.filter input:checked ~ div{
+                display: block;
+            }
+
+            .container nav.filter button:has(label[for="filterShow"]){
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <nav class="topnav">
+            <input type="checkbox" id="menu" style="display: none;">
+            <label for="menu">Menu</label>
+            <a href="index.htm">Home</a>
+            <a href="Mock test.html">Mock Test</a>
+            <a href="saveData.html">Save Data</a>
+            <a href="upload data.html">Upload Data</a>
+        </nav>
+        <nav class="filter">
+            <input type="checkbox" id="filterShow" style="display: none;">
+            <p>Total Questions: <span id="totalQuest"></span></p>
+            <button type="button" onclick="popUpModel.style.display='flex';">Add Question</button>
+            <button type="button"><label for="filterShow">Apply Filter</label></button>
+            <div>
+                <label for="statusBy">Status</label>
+                <select id="statusBy" oninput="filterStatus()">
+                    <option value="all">All</option>
+                    <option value="complete">Complete</option>
+                    <option value="incomplete">Incomplete</option>
+                </select>
+            </div>
+            <div>
+                <label for="SearchBy">Search By</label>
+                <select id="SearchBy" oninput="filterBySearch()">
+                    <option value="question">Question</option>
+                    <option value="answer">Answer</option>
+                </select>
+                <input type="text" id="SearchByName" oninput="filterBySearch()">
+            </div>
+        </nav>
+        <div class="tableContainer">
+            <table id="table">
+            </table>
+        </div>
+        <div class="popupcontainer">
+            <div class="popup">
+                <header>
+                    <h3>New Question</h3>
+                    <button type="button" onclick="popUpModel.style.display='none';" id="closeBtn">Close</button>
+                </header>
+                <form id="form">
+                    <main>
+                        <textarea id="Question" rows="2" placeholder="Enter Question" spellcheck="false"></textarea>
+                        <ul id="options">
+                            <li><span class="optionNo">1</span>
+                                <input type="text" class="option" placeholder="Enter Option" spellcheck="false">
+                                <input type="radio" name="correct" oninput="correctRadio(this)">
+                                <button onclick="removeOption(this)" type="button">X</button>
+                            </li>
+                            <li><span class="optionNo">2</span>
+                                <input type="text" class="option" placeholder="Enter Option" spellcheck="false">
+                                <input type="radio" name="correct" oninput="correctRadio(this)">
+                                <button onclick="removeOption(this)" type="button">X</button>
+                            </li>
+                            <li><span class="optionNo">3</span>
+                                <input type="text" class="option" placeholder="Enter Option" spellcheck="false">
+                                <input type="radio" name="correct" oninput="correctRadio(this)">
+                                <button onclick="removeOption(this)" type="button">X</button>
+                            </li>
+                            <li><span class="optionNo">4</span>
+                                <input type="text" class="option" placeholder="Enter Option" spellcheck="false">
+                                <input type="radio" name="correct" oninput="correctRadio(this)">
+                                <button onclick="removeOption(this)" type="button">X</button>
+                            </li>
+                        </ul>
+                        <div style="display: flex; justify-content: end;">
+                            <button id="addNewOptionBtn" onclick="addNewOption()" type="button">Add New Option</button>
+                        </div>
+                    </main>
+                    <hr>
+                    <footer>
+                        <button type="button" onclick="resetForm()">Reset</button>
+                        <button type="button" onclick="addQuestion()" id="addUpdate">Add</button>
+                    </footer>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        let Questions = JSON.parse(localStorage.getItem("Questions"));
+        if (Questions == null) {
+            Questions = [];
+        }
+        // let showQuest = [...Questions, ...completeQues];
+        // completeQues.pop();
+        // localStorage.setItem("completeQues", JSON.stringify(completeQues))
+        let table = document.getElementById("table");
+        let popUpModel = document.getElementsByClassName("popupcontainer")[0];
+        let form = document.getElementById("form");
+        let Question = document.getElementById("Question");
+        let options = document.getElementById("options");
+        let addNewOptionBtn = document.getElementById("addNewOptionBtn");
+        let addUpdateBtn = document.getElementById("addUpdate");
+        let closeBtn = document.getElementById("closeBtn");
+        let statusBy = document.getElementById("statusBy");
+        let SearchBy = document.getElementById("SearchBy");
+        let SearchByName = document.getElementById("SearchByName");
+        let totalQuest = document.getElementById("totalQuest");
+        let allTr = document.getElementsByTagName("tr");
+        let correctOpt = undefined;
+        let showed = [];
+        // Questions.pop()
+        // Questions.pop()
+        // localStorage.setItem("Questions", JSON.stringify(Questions))
+        
+        function tagToString(t){
+            return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+        
+        showTable()
+        async function showTable() {
+            totalQuest.innerText = Questions.length;
+            table.innerHTML = `<tr>
+                    <th>Sr</th>
+                    <th>Question</th>
+                    <th>Answer</th>
+                    <th>Att / Crt</th>
+                    <th>Actions</th>
+                </tr>`;
+            let tabletxt = '';
+            for (let i = 0; i < Questions.length; i++) {
+                let tr = await document.createElement("tr");
+                tr.innerHTML = `<td>${i + 1}</td>
+                <td>${tagToString(Questions[i].question)}</td>
+                <td>${tagToString(Questions[i].options[Questions[i].answer])}</td>
+                <td>${Questions[i].attend}/${Questions[i].correct}</td>
+                <td><button type="button" onclick="DeleteBtn(${i})">Del</button><button type="button" onclick="updateBtn(${i})">Up</button>
+                ${Questions[i].status == "complete" ? `<button type="button" onclick="inComplete(${i}, this)">InCom</button>` : `<button type="button" onclick="completeBtn(${i}, this)">Com</button>`}</td>`
+                if (Questions[i].status == "complete") {
+                    tr.classList.add("complete")
+                }
+                table.appendChild(tr);
+                showed.push(i);
+            }
+        }
+
+        function updateBtn(i) {
+            let tabOpen = localStorage.getItem("tabOpen");
+            let localResume = JSON.parse(localStorage.getItem("resume"));
+            let localResult = JSON.parse(localStorage.getItem("result"));
+            if(tabOpen){
+                alert("First Close The Related Tabs First And Then Update");
+                return;
+            }
+            if(localResult && localResume){
+                if (confirm("If You Update This Question, You can not resume your mcq test!\nPlease Cancle!")) {
+                    localStorage.removeItem("resume");
+                    localStorage.removeItem("result");
+                }
+                else{
+                    return;
+                }
+            }
+
+            popUpModel.style.display = 'flex';
+            Question.value = Questions[i].question;
+
+            options.innerHTML = '';
+            for (let j = 0; j < Questions[i].options.length; j++) {
+                let li = document.createElement("li");
+                li.innerHTML = `<span class="optionNo">${j + 1}</span>
+                <input type="text" class="option" placeholder="Enter Option" value="${Questions[i].options[j]}">
+                <input type="radio" name="correct" oninput="correctRadio(this)">
+                                <button onclick="removeOption(this)" type="button">X</button>`;
+                options.appendChild(li);
+            }
+            document.getElementsByName("correct")[Questions[i].answer].click()
+            addUpdateBtn.innerText = "Update";
+            addUpdateBtn.setAttribute("onclick", `setUpdatedBtn(${i})`);
+            closeBtn.setAttribute("onclick", "closeModel()");
+        }
+
+        function DeleteBtn(i) {
+            let tabOpen = localStorage.getItem("tabOpen");
+            let localResume = JSON.parse(localStorage.getItem("resume"));
+            let localResult = JSON.parse(localStorage.getItem("result"));
+            if(tabOpen){
+                alert("First Close The Related Tabs First And Then Delete");
+                return;
+            }
+            if(localResult && localResume){
+                if (confirm("If You Delete This Question, You can not resume your mcq test!")) {
+                    Questions.splice(i, 1);
+                    localStorage.removeItem("resume");
+                    localStorage.removeItem("result");
+                }
+                else{
+                    return;
+                }
+            }
+
+            else if (confirm("Do You Really Want to delete")) {
+                Questions.splice(i, 1);
+            }
+            localStorage.setItem("Questions", JSON.stringify(Questions))
+            showTable();
+        }
+
+        function setUpdatedBtn(i) {
+            let obj = formValue();
+            if (obj == false) { return };
+            Questions[i] = obj;
+            localStorage.setItem("Questions", JSON.stringify(Questions));
+            closeModel();
+            showTable();
+            statusBy.value = "all";
+        }
+        
+        function completeBtn(i, t) {
+            Questions[i].status = "complete";
+            t.innerText = 'InCom';
+            t.setAttribute("onclick", `inComplete(${i}, this)`)
+            localStorage.setItem("Questions", JSON.stringify(Questions));
+            filterStatus();
+            t.parentElement.parentElement.classList.add("complete");
+        }
+
+        function inComplete(i, t) {
+            Questions[i].status = "incomplete";
+            t.innerText = 'Com';
+            t.setAttribute("onclick", `completeBtn(${i}, this)`)
+            localStorage.setItem("Questions", JSON.stringify(Questions));
+            filterStatus();
+            t.parentElement.parentElement.classList.remove("complete");
+        }
+
+        function filterStatus() {
+            // await showTable();
+            showed = [];
+            let val = statusBy.value;
+
+            for (let i = 0; i < Questions.length; i++) {
+                if (val == Questions[i].status || val == "all") {
+                    if (allTr[i + 1].style.display = "none") {
+                        allTr[i + 1].style.display = "table-row";
+                        showed.push(i);
+                    }
+                }
+                else {
+                    allTr[i + 1].style.display = "none";
+                }
+            }
+            totalQuest.innerText = showed.length;
+        }
+
+        function filterBySearch() {
+            let by = SearchBy.value;
+            let txt = SearchByName.value.toLowerCase();
+
+            for (let i = 0; i < showed.length; i++) {
+                let obj = Questions[showed[i]];
+                let x = (by == 'answer') ? obj.options[obj.answer] : obj[by];
+
+                if (x.toLowerCase().includes(txt)) {
+                    allTr[showed[i] + 1].style.display = "table-row";
+                }
+                else {
+                    allTr[showed[i] + 1].style.display = "none";
+                }
+            }
+        }
+
+        
+        function correctRadio(t) {
+            if (correctOpt != null || correctOpt != undefined) {
+                correctOpt.classList.remove("tick")
+            }
+            // radioLi = t.parentElement;
+            correctOpt = t.parentElement;
+            correctOpt.classList.add("tick");
+        }
+
+        function removeOption(t) {
+            if (t.parentElement == correctOpt) {
+                correctOpt = undefined;
+            }
+            t.parentElement.remove();
+            let li_s = options.children;
+            for (let i = 0; i < li_s.length; i++) {
+                li_s[i].firstElementChild.innerHTML = i + 1;
+            }
+            if (addNewOptionBtn.disabled) {
+                addNewOptionBtn.disabled = false;
+            }
+        }
+
+        function addNewOption() {
+            let li_sLength = options.childElementCount;
+            if (li_sLength < 8) {
+                let li = document.createElement("li");
+                li.innerHTML = `<span class="optionNo">${li_sLength + 1}</span><input type="text" class="option" placeholder="Enter Option">
+                <input type="radio" name="correct" oninput="correctRadio(this)" spellcheck="false">
+                <button onclick="removeOption(this)" type="button">X</button>`;
+                options.appendChild(li);
+            }
+            if (li_sLength == 7) {
+                addNewOptionBtn.disabled = true;
+            }
+        }
+
+        function addQuestion() {
+            let obj = formValue();
+            if (obj == false) { return }
+            else{
+                let q = obj.question.toLowerCase();
+                for(let i=0; i<Questions.length;i++){
+                    if(Questions[i].question.toLowerCase() == q){
+                        let n = i + 1;
+                        if(!confirm("This Question is Alerady Present!\nQuestion Number "+ n)){
+                            return;
+                        };
+                    }
+                }
+            }
+            Questions.push(obj)
+            form.reset();
+            correctOpt.classList.remove("tick");
+            localStorage.setItem("Questions", JSON.stringify(Questions));
+            popUpModel.style.display = 'none';
+            showTable();
+            correctOpt = undefined;
+            options.innerHTML = '';
+            for (let j = 0; j < 4; j++) {
+                let li = document.createElement("li");
+                li.innerHTML = `<span class="optionNo">${j + 1}</span>
+                <input type="text" class="option" placeholder="Enter Option" value="">
+                <input type="radio" name="correct" oninput="correctRadio(this)">
+                <button onclick="removeOption(this)" type="button">X</button>`;
+                options.appendChild(li);
+            }
+        };
+        
+        function formValue() {
+            let optInputs = document.getElementsByClassName("option");
+            let options_obj = [];
+            if (Question.value == "") {
+                alert("Please Enter Question");
+                return false;
+            };
+            for (let i = 0; i < optInputs.length; i++) {
+                if(optInputs[i].value == ""){
+                    alert(`please Fill The Option${i+1}!\nor\nRemove The Option${i+1}!`)
+                    return false;
+                }
+                // if (optInputs[i].value == "" && i < 2) {
+                //     alert("Please Enter Minimum 2 Options")
+                //     return false;
+                // }
+                if (optInputs[i].value != "") {
+                    options_obj.push(optInputs[i].value);
+                }
+            }
+            if(options_obj.length < 2){
+                alert("Please Enter Minimum Two(2) Options");
+                return false;
+            }
+            let answer = Array.from(options.children).indexOf(correctOpt);
+            if (answer == -1) {
+                alert("Please Choose Correct Option")
+                return false;
+            }
+
+
+            let obj = {
+                answer: answer,
+                attend: 0,
+                status: 'incomplete',
+                correct: 0,
+                options: options_obj,
+                question: Question.value,
+            }
+            return obj;
+        }
+
+        function resetForm() {
+            if (correctOpt != undefined || correctOpt != null) {
+                document.querySelector("input[type='radio']:checked").checked = false;
+                correctOpt.classList.remove('tick');
+                correctOpt = undefined;
+            }
+            Question.value = '';
+            let inputs = document.getElementsByClassName("option");
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].value = "";
+            }
+        }
+        
+        function closeModel() {
+            // popUpModel.style.display='none';
+            resetForm();
+            options.innerHTML = '';
+            for (let j = 0; j < 4; j++) {
+                let li = document.createElement("li");
+                li.innerHTML = `<span class="optionNo">${j + 1}</span>
+                <input type="text" class="option" placeholder="Enter Option" value="">
+                <input type="radio" name="correct" oninput="correctRadio(this)">
+                <button onclick="removeOption(this)" type="button">X</button>`;
+                options.appendChild(li);
+            }
+            addUpdateBtn.innerText = "Add";
+            addUpdateBtn.setAttribute("onclick", "addQuestion()");
+            closeBtn.setAttribute("onclick", "popUpModel.style.display='none';");
+            popUpModel.style.display = 'none';
+        }
+
+    </script>
+</body>
+
+</html>
