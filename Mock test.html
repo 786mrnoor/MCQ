@@ -425,10 +425,11 @@
         var localQuestions = JSON.parse(localStorage.getItem("Questions"));
         if(!localQuestions){
             location.href = "index.htm";
+        } else{
+            localStorage.setItem("tabOpen", "true");
         }
         var localResume = JSON.parse(localStorage.getItem("resume"));
         var localResult = JSON.parse(localStorage.getItem("result"));
-        localStorage.setItem("tabOpen", "true");
         var Questions = [];
         let queNumb = 0;
         var result = [];
