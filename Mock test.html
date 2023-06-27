@@ -642,10 +642,10 @@
         }
 
         window.addEventListener('unload', function (e) {
+            localStorage.removeItem("tabOpen");
             if (quizStart) {
                 localStorage.setItem("result", JSON.stringify(result));
             }
-            localStorage.removeItem("tabOpen");
         });
 
         // ShowQuestion();
