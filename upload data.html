@@ -159,11 +159,13 @@
         }
 
         async function chooseFile() {
-            let a = document.getElementById("fileTag").click();
             let tabOpen = localStorage.getItem("tabOpen");
             if (tabOpen) {
                 alert("First Close The Related Tabs First And Then Delete");
                 return;
+            }
+            else{
+            let a = document.getElementById("fileTag").click();
             }
         }
 
