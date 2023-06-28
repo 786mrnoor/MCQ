@@ -425,10 +425,10 @@
         let quizStart = false;
         var result = [];
         window.addEventListener('unload', function (e) {
+            localStorage.removeItem("tabOpen");
             if (quizStart) {
                 localStorage.setItem("result", JSON.stringify(result));
             }
-            localStorage.removeItem("tabOpen");
         });
         var localQuestions = JSON.parse(localStorage.getItem("Questions"));
         if(!localQuestions || !localQuestions.length){
