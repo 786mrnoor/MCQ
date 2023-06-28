@@ -431,7 +431,7 @@
             localStorage.removeItem("tabOpen");
         });
         var localQuestions = JSON.parse(localStorage.getItem("Questions"));
-        if(!localQuestions){
+        if(!localQuestions || !localQuestions.length){
             location.href = "index.htm";
         } else{
             localStorage.setItem("tabOpen", "true");
