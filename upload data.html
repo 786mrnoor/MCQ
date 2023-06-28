@@ -171,9 +171,11 @@
         }
 
         function deleteAll(){
-            Questions = [];
-            localStorage.setItem("Questions", JSON.stringify(Questions));
-            alert("All The Questions Deleted Successfully!")
+            if(confirm("Do You Want To Delete All The Questions"){
+                Questions = [];
+                localStorage.setItem("Questions", JSON.stringify(Questions));
+                alert("All The Questions Deleted Successfully!");
+            }   
         }
     </script>
 </body>
