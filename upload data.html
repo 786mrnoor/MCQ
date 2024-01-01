@@ -24,7 +24,7 @@
         }
 
         .container section {
-            margin: 10% auto;
+            margin: 10px auto;
             width: 90%;
             max-width: 400px;
             padding: 30px;
@@ -51,6 +51,8 @@
         }
 
 
+
+
         /* top nav */
         .container nav.topnav {
             display: flex;
@@ -62,7 +64,7 @@
         }
 
         .container nav.topnav a,
-        .container nav.topnav label{
+        .container nav.topnav label {
             padding: 10px;
             text-decoration: none;
             color: var(--bgcolor);
@@ -77,37 +79,72 @@
         }
 
         .container nav.topnav a:hover,
-        .container nav.topnav label:hover{
+        .container nav.topnav label:hover {
             background-color: var(--bgcolor);
             color: white;
         }
-        .container nav.topnav label{
+
+        .container nav.topnav label {
             display: none;
         }
-        @media (width < 450px){
-            .container nav.topnav{
+
+        @media (width < 450px) {
+            .container nav.topnav {
                 flex-wrap: wrap;
                 justify-content: start;
             }
-            .container nav.topnav label{
+
+            .container nav.topnav label {
                 display: block;
-                border:none;
+                border: none;
                 text-align: left;
             }
-            
-            .container nav.topnav a{
+
+            .container nav.topnav a {
                 width: 100%;
                 border: none;
                 text-align: left;
                 padding: 5px 10px;
                 display: none;
             }
-            .container nav.topnav input:checked ~ a{
+
+            .container nav.topnav input:checked~a {
                 display: block;
             }
-            .container nav.topnav input:checked ~ label{
+
+            .container nav.topnav input:checked~label {
                 background-color: var(--bgcolor);
                 color: white;
+            }
+        }
+
+        .input {
+            background-color: white;
+            padding: 10px;
+
+            button {
+                padding: 10px 15px;
+                background-color: var(--bgcolor);
+                outline: none;
+                border: none;
+                font-size: 17px;
+                color: white;
+                border-radius: 10px;
+                margin-bottom: 10px;
+                cursor: pointer;
+            }
+
+            textarea {
+                width: 100%;
+                height: 100%;
+                min-height: 80vh;
+                resize: none;
+                padding: 10px;
+                box-shadow: 2px 2px 5px black;
+                outline: none;
+                border: none;
+                font-size: 16px;
+                line-height: 24px;
             }
         }
     </style>
@@ -128,38 +165,41 @@
             <button type="button" onclick="chooseFile()" style="width: 100%;">Choose File</button>
             <button type="button" onclick="deleteAll()" title="Delete All Previous Questions">Delete All</button>
         </section>
-    </div>
+        <div class="input">
+            <button type="button" onclick="uploadByText()">Upload Data</button>
+            <textarea spellcheck="false" id="textarea" placeholder="Enter Data here"></textarea>
+        </div>
     </div>
     <script>
-        window.addEventListener( "pageshow", function ( event ) {
-  var historyTraversal = event.persisted || ( typeof window.performance != "undefined" && 
-    window.performance.navigation.type === 2 );
-  if ( historyTraversal ) {
-    // Handle page restore.
-    window.location.reload();
-  }
-});
-        
+        window.addEventListener("pageshow", function (event) {
+            var historyTraversal = event.persisted || (typeof window.performance != "undefined" &&
+                window.performance.navigation.type === 2);
+            if (historyTraversal) {
+                // Handle page restore.
+                window.location.reload();
+            }
+        });
+
         let localQuestions = JSON.parse(localStorage.getItem("Questions"));
-        let textarea = document.getElementsByTagName("textarea")[0];
+        // let textarea = document.getElementsByTagName("textarea")[0];
         let totalQuest = document.getElementById("totalQuest");
         let fileHandle;
-        let Questions = localQuestions?localQuestions:[];
+        let Questions = localQuestions ? localQuestions : [];
 
         let fileTxt;
-        async function myFun(t){
+        async function myFun(t) {
             let file = t.files[0];
             const fr = new FileReader();
-            fr.onload = function(){
+            fr.onload = function () {
                 try {
                     fileTxt = JSON.parse(fr.result);
-                    if(typeof(fileTxt) != "object"){ throw "This is Not Valid Data"}
+                    if (typeof (fileTxt) != "object") { throw "This is Not Valid Data" }
                 }
                 catch (err) {
                     alert("Please Enter Valid Data!\n" + err);
                     return;
                 }
-                for(let i of fileTxt){
+                for (let i of fileTxt) {
                     Questions.push(i);
                 }
                 localStorage.setItem("Questions", JSON.stringify(Questions));
@@ -174,19 +214,64 @@
             if (tabOpen) {
                 alert("First Close The Related Tabs First And Then Delete");
                 return;
-            } else{
+            } else {
                 let a = document.getElementById("fileTag").click();
             }
         }
 
-        function deleteAll(){
-            if(confirm("Do You Want To Delete All The Questions")){
+        function deleteAll() {
+            if (confirm("Do You Want To Delete All The Questions")) {
                 Questions = [];
                 localStorage.setItem("Questions", JSON.stringify(Questions));
                 localStorage.removeItem("resume");
                 localStorage.removeItem("result");
                 alert("All The Questions Deleted Successfully!");
-            }   
+            }
+        }
+    </script>
+    <script>
+        let textarea = document.getElementById('textarea');
+        function uploadByText() {
+            try{
+                let obj = JSON.parse(textarea.value);
+                let check = checkObj(obj);
+                if(!check) return;
+                obj.attend = 0;
+                obj.correct = 0;
+                obj.status = "incomplete";
+                let questions = JSON.parse(localStorage.getItem("Questions"));
+                if(questions){
+                    questions.push(obj);
+                    localStorage.setItem("Questions", JSON.stringify(questions));
+                }
+                else{
+                    let questions = [obj];
+                    localStorage.setItem("Questions", JSON.stringify(questions));
+                }
+                textarea.value = '';
+                textarea.setAttribute("placeholder", 'Noor');
+            }
+            catch(err){
+                console.log(err);
+            }
+        }
+        function checkObj(obj){
+            if(obj.question === ''){
+                return false;
+            }
+            if(obj.options === ''){
+                return false;
+            }
+            if(obj.answer === '' && isNaN(obj.answer)){
+                return false;
+            }
+            if(obj.options === ''){
+                return false;
+            }
+            if(Array.isArray(obj.options) && obj.options.length < 0){
+                return false;
+            }
+            return true;
         }
     </script>
 </body>
