@@ -241,7 +241,7 @@
                 obj.status = "incomplete";
                 let questions = JSON.parse(localStorage.getItem("Questions"));
                 if(questions){
-                    questions.push(obj);
+                    questions.unshift(obj);
                     localStorage.setItem("Questions", JSON.stringify(questions));
                 }
                 else{
